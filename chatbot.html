@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot Gemini</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-box">
+            <div id="chat-log" class="chat-log"></div>
+            <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+            <button id="send-btn">Enviar</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
+
+<script type="importmap">
+    {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+</script>
+
+
+<script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+
+    // Fetch your API_KEY
+    const API_KEY = "AIzaSyAdD5TspfAx2glLLOzQ6f33sVwOX79GASM";
+
+    // Access your API key (see "Set up your API key" above)
+    const genAI = new GoogleGenerativeAI(API_KEY);
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+
+    async function run() {
+        const prompt = "Write a story about an AI and magic"
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        console.log(text);
+    }
+
+    async function run(){
+        const prompt= "você a partir de hoje é o Zé pequeno do filme cidade de Deus, OBS: aja e fale igual ele, incluindo os palavrões, se possível"
+
+        const result = await model.generateContent (prompt);
+        const response = await result.response; 
+        const text = response.text();
+
+        document.getElementById("resposta").value = text;
+        console.log(text);
+    }
+
+    run();
+
+</script>
