@@ -12,16 +12,7 @@
     <div class="chat-container">
         <div class="chat-box">
             <div id="chat-log" class="chat-log">
-
-                <div class="user-message">
-
-                </div>
-
-                <div class="bot-message">
-
-                </div>
-
-
+                <!-- Log das mensagens do usuário e do bot -->
             </div>
             <input type="text" id="user-input" placeholder="Digite sua mensagem...">
             <button id="send-btn">Enviar</button>
@@ -37,70 +28,55 @@
         "imports": {
           "@google/generative-ai": "https://esm.run/@google/generative-ai"
         }
-      }
+    }
 </script>
-
 
 <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
 
-    // Fetch your API_KEY
-    const API_KEY = "AIzaSyAdD5TspfAx2glLLOzQ6f33sVwOX79GASM";
+    // Usando sua chave de API
+    const API_KEY = "AIzaSyAdD5TspfAx2glLLOzQ6f33sVwOX79GASM"; 
 
-    // Access your API key (see "Set up your API key" above)
+    // Instanciar a API
     const genAI = new GoogleGenerativeAI(API_KEY);
-
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+    async function obterRespostaDoBot(mensagemUsuario) {
+        try {
+            // Personalizando o prompt para o Zé Pequeno
+            const prompt = `Aja e fale como o Zé Pequeno do filme Cidade de Deus. Use a linguagem e o estilo dele, incluindo gírias e palavrões. Responda ao seguinte: "${mensagemUsuario}"`;
+            
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = await response.text();
 
-    async function run1() {
-        const prompt = "Write a story about an AI and magic"
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        console.log(text);
+            adicionarMensagemBot(text); // Exibe a resposta do bot no chat
+        } catch (error) {
+            console.error("Erro ao obter resposta do bot:", error);
+        }
     }
 
-    async function run() {
-        const prompt = "você a partir de hoje é o Zé pequeno do filme cidade de Deus, OBS: aja e fale igual ele, incluindo os palavrões, se possível"
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-
-        document.getElementById("chat-log").value = text;
-        console.log(text);
-        adicionarMensagemBot(text);
-
-    }
-
-    run();
-
-</script>
-
-<script>
     function adicionarMensagemUsuario(mensagem) {
-        var novaDiv = document.createElement("div");
+        const novaDiv = document.createElement("div");
         novaDiv.className = "user-message";
         novaDiv.textContent = mensagem;
         document.getElementById("chat-log").appendChild(novaDiv);
     }
 
-
     function adicionarMensagemBot(mensagem) {
-        var novaDiv = document.createElement("div");
+        const novaDiv = document.createElement("div");
         novaDiv.className = "bot-message";
         novaDiv.textContent = mensagem;
         document.getElementById("chat-log").appendChild(novaDiv);
     }
 
-
-    async function obterRespostaDoBot(mensagemUsuario) {
-        const result = await model.generateContent(mensagemUsuario);
-        const response = await result.response;
-        const text = await response.text();
-
-        adicionarMensagemBot(text);
-    }
+    // Função para enviar a mensagem ao clicar no botão
+    document.getElementById("send-btn").addEventListener("click", () => {
+        const userInput = document.getElementById("user-input").value;
+        if (userInput.trim() !== "") {
+            adicionarMensagemUsuario(userInput); // Exibe a mensagem do usuário no chat
+            obterRespostaDoBot(userInput); // Envia a mensagem para o bot
+            document.getElementById("user-input").value = ""; // Limpa o campo de input
+        }
+    });
 </script>
