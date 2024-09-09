@@ -1,7 +1,21 @@
 {
+  "name": "chatbot",
+  "version": "1.0.0",
+  "description": "Um aplicativo chatbot com Node.js e MongoDB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "express": "^4.19.2",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.6.1"
-  }
+    "mongoose": "^8.6.1",
+    "body-parser": "^1.20.2"
+  },
+  "engines": {
+    "node": ">=14.x"
+  },
+  "author": "Eduardo",
+  "license": "MIT"
 }
+
