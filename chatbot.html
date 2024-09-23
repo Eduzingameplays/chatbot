@@ -9,7 +9,16 @@
 </head>
 
 <body>
-    <div class="chat-container">
+    <div id="login-container" class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Usuário">
+        <input type="password" id="password" placeholder="Senha">
+        <button id="login-btn">Login</button>
+        <div id="login-error" class="error-message"></div>
+    </div>
+
+    <!-- Chat visível logo abaixo do login -->
+    <div id="chat-container" class="chat-container">
         <div class="chat-box">
             <div id="chat-log" class="chat-log">
                 <!-- Log das mensagens do usuário e do bot -->
@@ -18,6 +27,7 @@
             <button id="send-btn">Enviar</button>
         </div>
     </div>
+
     <script src="node_modules/server.js"></script>
 </body>
 
@@ -41,18 +51,40 @@
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+    // Histórico de conversas (limitado)
+    let historicoConversa = [];
+
+    // Login simples (usuário: "admin", senha: "1234")
+    document.getElementById('login-btn').addEventListener('click', () => {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (username === "admin" && password === "1234") {
+            document.getElementById('login-error').textContent = "Login realizado com sucesso!";
+        } else {
+            document.getElementById('login-error').textContent = "Usuário ou senha incorretos!";
+        }
+    });
+
     async function obterRespostaDoBot(mensagemUsuario) {
         try {
-            // Personalizando o prompt para o Zé Pequeno
-            const prompt = `Aja e fale como o Zé Pequeno do filme Cidade de Deus. Use a linguagem e o estilo dele, incluindo gírias e palavrões. Responda ao seguinte: "${mensagemUsuario}"`;
-            
+            historicoConversa.push({ role: "user", content: mensagemUsuario });
+
+            const historicoLimitado = historicoConversa.slice(-3);
+            const contexto = historicoLimitado.map(item => `${item.role}: ${item.content}`).join('\n');
+
+            const prompt = `Aja e fale como o Zé Pequeno do filme Cidade de Deus. Use a linguagem e o estilo dele, incluindo gírias e palavrões. Aqui está a conversa até agora: \n${contexto}`;
+
             const result = await model.generateContent(prompt);
             const response = await result.response;
             const text = await response.text();
 
-            adicionarMensagemBot(text); // Exibe a resposta do bot no chat
+            historicoConversa.push({ role: "bot", content: text });
+
+            adicionarMensagemBot(text);
         } catch (error) {
             console.error("Erro ao obter resposta do bot:", error);
+            adicionarMensagemBot("Erro ao responder. Tente novamente.");
         }
     }
 
@@ -70,13 +102,12 @@
         document.getElementById("chat-log").appendChild(novaDiv);
     }
 
-    // Função para enviar a mensagem ao clicar no botão
     document.getElementById("send-btn").addEventListener("click", () => {
         const userInput = document.getElementById("user-input").value;
         if (userInput.trim() !== "") {
-            adicionarMensagemUsuario(userInput); // Exibe a mensagem do usuário no chat
-            obterRespostaDoBot(userInput); // Envia a mensagem para o bot
-            document.getElementById("user-input").value = ""; // Limpa o campo de input
+            adicionarMensagemUsuario(userInput);
+            obterRespostaDoBot(userInput);
+            document.getElementById("user-input").value = "";
         }
     });
 </script>
