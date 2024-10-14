@@ -1,3 +1,4 @@
+/* Estilo global */
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -6,8 +7,10 @@ body {
     height: 100vh;
     margin: 0;
     background-color: #f0f0f0;
+    flex-direction: column;
 }
 
+/* Estilo do container do chat */
 .chat-container {
     background-color: #fff;
     border-radius: 8px;
@@ -41,11 +44,13 @@ body {
 .user-message {
     text-align: right;
     background-color: #e0f7fa;
+    border-radius: 15px;
 }
 
 .bot-message {
     text-align: left;
     background-color: #fff9c4;
+    border-radius: 15px;
 }
 
 #user-input {
@@ -57,7 +62,7 @@ body {
 
 #send-btn {
     padding: 10px;
-    background-color: #007bff;
+    background-color: #0056b3;
     color: white;
     border: none;
     border-radius: 4px;
@@ -67,10 +72,10 @@ body {
 }
 
 #send-btn:hover {
-    background-color: #0056b3;
+    background-color: #003d82;
 }
 
-/* Estilo para o container de login */
+/* Estilo do container de login */
 .login-container {
     background-color: #fff;
     border-radius: 8px;
@@ -108,10 +113,10 @@ body {
 }
 
 .login-container button:hover {
-    background-color: #0056b3;
+    background-color: #003d82;
 }
 
-/* Estilo para a mensagem de erro no login */
+/* Estilo da mensagem de erro no login */
 .error-message {
     color: red;
     font-size: 14px;
@@ -121,4 +126,85 @@ body {
 /* Esconde o container de chat até que o login seja realizado */
 .hidden {
     display: none;
+}
+
+/* Estilo do footer */
+footer {
+    background-color: #0056b3;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-content {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #0056b3;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    border-radius: 18px;
+    margin-bottom: 20px;  /* Espaçamento adicionado entre o header e os containers */
+}
+
+.chatbot-header h1 {
+    margin: 0;
+    font-size: 36px;
+    font-family: 'Arial', sans-serif;
+}
+
+.chatbot-header p {
+    margin: 5px 0 0 0;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    font-style: italic;
+}
+
+/* Responsividade: Ajustes para telas menores */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .chat-container, .login-container {
+        width: 100%;
+        max-width: 90%;
+    }
+
+    .chat-box, .login-container {
+        padding: 15px;
+    }
+
+    .chat-log {
+        padding: 8px;
+    }
+
+    footer {
+        font-size: 14px;
+    }
+
+    #send-btn, #user-input {
+        font-size: 14px;
+    }
+
+    .chatbot-header h1 {
+        font-size: 28px;
+    }
+
+    .chatbot-header p {
+        font-size: 14px;
+    }
+
+    /* Faz com que o header fique acima do chat em telas menores */
+    header {
+        order: -1; /* Coloca o header no topo */
+        width: 100%;
+        margin-bottom: 10px; /* Espaçamento entre o header e os containers em telas menores */
+    }
 }

@@ -9,6 +9,13 @@
 </head>
 
 <body>
+    <header>
+        <div class="chatbot-header">
+            <h1>Zé do Chat</h1>
+            <p>Seu assistente virtual</p>
+        </div>
+    </header>
+    
     <div id="login-container" class="login-container">
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário">
@@ -17,8 +24,8 @@
         <div id="login-error" class="error-message"></div>
     </div>
 
-    <!-- Chat visível logo abaixo do login -->
-    <div id="chat-container" class="chat-container">
+    <!-- Chat oculto até o login ser feito -->
+    <div id="chat-container" class="chat-container hidden">
         <div class="chat-box">
             <div id="chat-log" class="chat-log">
                 <!-- Log das mensagens do usuário e do bot -->
@@ -29,6 +36,14 @@
     </div>
 
     <script src="node_modules/server.js"></script>
+
+    <footer>
+        <div class="footer-content">
+            <p>Eduardo José de Souza Oliveira - Turma: IIW2022</p>
+            <p>Usuário: admin;  Senha: 1234</p>
+        </div>
+    </footer>
+
 </body>
 
 </html>
@@ -61,6 +76,8 @@
 
         if (username === "admin" && password === "1234") {
             document.getElementById('login-error').textContent = "Login realizado com sucesso!";
+            document.getElementById('login-container').classList.add('hidden'); // Esconde o login
+            document.getElementById('chat-container').classList.remove('hidden'); // Exibe o chat
         } else {
             document.getElementById('login-error').textContent = "Usuário ou senha incorretos!";
         }
@@ -73,7 +90,7 @@
             const historicoLimitado = historicoConversa.slice(-3);
             const contexto = historicoLimitado.map(item => `${item.role}: ${item.content}`).join('\n');
 
-            const prompt = `Aja e fale como o Zé Pequeno do filme Cidade de Deus. Use a linguagem e o estilo dele, incluindo gírias e palavrões. Aqui está a conversa até agora: \n${contexto}`;
+            const prompt = `Aja e fale como o Zé Pequeno do filme Cidade de Deus. Aqui está a conversa até agora: \n${contexto}`;
 
             const result = await model.generateContent(prompt);
             const response = await result.response;
