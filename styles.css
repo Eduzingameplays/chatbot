@@ -125,7 +125,7 @@ body {
 
 /* Esconde o container de chat até que o login seja realizado */
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 /* Estilo do footer */

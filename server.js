@@ -1,15 +1,28 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const cors = require('cors'); // Adicionando o CORS
+const fetch = require('node-fetch'); // Para enviar requisições HTTP
 
 // Inicializar o Express
 const app = express();
-app.use(bodyParser.json());
 
-// Conectar ao MongoDB (use sua URI do MongoDB Atlas)
-mongoose.connect('mongodb+srv://eduardojosedesouzaoliveira:lZKN7J1z3WhWfKi2@cluster0.2cf3a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-    .then(() => console.log("Conectado ao MongoDB"))
-    .catch(err => console.error("Erro ao conectar ao MongoDB", err));
+// Configurar CORS para permitir requisições da origem correta
+app.use(cors({
+    origin: 'http://127.0.0.1:5500', // Origem do frontend
+    methods: ['GET', 'POST'], // Métodos permitidos
+    allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
+}));
+
+// Middleware para processar JSON
+app.use(express.json());
+
+// Conectar ao MongoDB com sua URL
+mongoose.connect('mongodb+srv://eduardojosedesouzaoliveira:lZKN7J1z3WhWfKi2@cluster0.2cf3a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("Conectado ao MongoDB"))
+.catch(err => console.error("Erro ao conectar ao MongoDB", err));
 
 // Função para obter o IP do usuário
 function getClientIp(req) {
@@ -87,13 +100,23 @@ app.post('/save-history', async (req, res) => {
     }
 });
 
-// Endpoint para listar todos os históricos salvos no MongoDB
-app.get('/get-history', async (req, res) => {
+// Endpoint para fazer a requisição à API da Google
+app.post('/generate-response', async (req, res) => {
     try {
-        const histories = await History.find(); // Retorna todos os registros da coleção
-        res.status(200).json(histories);
+        const response = await fetch('https://api.google.com/generative-ai', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer YOUR_GOOGLE_API_KEY`,  // Coloque sua chave de API
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(req.body),  // Passa a mensagem do usuário para o corpo da requisição
+        });
+
+        const data = await response.json();  // Obtém a resposta da API
+        res.json(data);  // Retorna a resposta para o frontend
     } catch (error) {
-        res.status(500).send("Erro ao buscar históricos: " + error);
+        console.error('Erro ao chamar a API da Google:', error);
+        res.status(500).send('Erro ao processar a requisição');
     }
 });
 

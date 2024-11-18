@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatBot Gemini</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        /* Adicionando um estilo básico para o chat */
+        #chat-container {
+            display: none; /* Inicialmente escondido */
+        }
+    </style>
 </head>
 
 <body>
@@ -15,7 +25,8 @@
             <p>Seu assistente virtual</p>
         </div>
     </header>
-    
+
+    <!-- Contêiner de Login -->
     <div id="login-container" class="login-container">
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário">
@@ -24,8 +35,8 @@
         <div id="login-error" class="error-message"></div>
     </div>
 
-    <!-- Chat oculto até o login ser feito -->
-    <div id="chat-container" class="chat-container hidden">
+    <!-- Contêiner do Chat -->
+    <div id="chat-container" class="chat-container">
         <div class="chat-box">
             <div id="chat-log" class="chat-log">
                 <!-- Log das mensagens do usuário e do bot -->
@@ -35,8 +46,6 @@
         </div>
     </div>
 
-    <script src="node_modules/server.js"></script>
-
     <footer>
         <div class="footer-content">
             <p>Eduardo José de Souza Oliveira - Turma: IIW2022</p>
@@ -44,87 +53,88 @@
         </div>
     </footer>
 
+    <script>
+        let historicoConversa = [];
+        let chatSession;
+
+        // Função para iniciar o chat
+        async function iniciarChat() {
+            try {
+                // Coloque aqui o código que inicializa a sessão do chat, se necessário
+                console.log("Sessão de chat iniciada!");
+                // Exemplo de inicialização simples (ajuste conforme necessário)
+                chatSession = {}; // Simulação de sessão
+            } catch (error) {
+                console.error("Erro ao iniciar a sessão do chat:", error);
+            }
+        }
+
+        // Função de login
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (username === "admin" && password === "1234") {
+                document.getElementById('login-error').textContent = ""; // Limpa mensagens de erro
+                
+                // Esconde o contêiner de login
+                document.getElementById('login-container').style.display = "none";
+                
+                // Exibe o contêiner do chat
+                document.getElementById('chat-container').style.display = "block";
+
+                iniciarChat(); // Inicializa o chat
+            } else {
+                document.getElementById('login-error').textContent = "Usuário ou senha incorretos!";
+            }
+        });
+
+        // Função para enviar a mensagem e pegar a resposta do bot
+        async function obterRespostaDoBot(mensagemUsuario) {
+            try {
+                const response = await fetch('http://127.0.0.1:3000/generate-response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userMessage: mensagemUsuario }),  // Envia a mensagem do usuário para o servidor
+                });
+                
+                const data = await response.json();
+                const botResponse = data.response;  // Aqui você ajusta conforme a estrutura da resposta da sua API
+
+                // Adiciona a resposta do bot ao histórico e à interface
+                historicoConversa.push({ role: "bot", content: botResponse });
+                adicionarMensagemBot(botResponse);
+            } catch (error) {
+                console.error("Erro ao obter resposta do bot:", error);
+                adicionarMensagemBot("Erro ao responder. Tente novamente.");
+            }
+        }
+
+        function adicionarMensagemUsuario(mensagem) {
+            const novaDiv = document.createElement("div");
+            novaDiv.className = "user-message";
+            novaDiv.textContent = mensagem;
+            document.getElementById("chat-log").appendChild(novaDiv);
+        }
+
+        function adicionarMensagemBot(mensagem) {
+            const novaDiv = document.createElement("div");
+            novaDiv.className = "bot-message";
+            novaDiv.textContent = mensagem;
+            document.getElementById("chat-log").appendChild(novaDiv);
+        }
+
+        document.getElementById("send-btn").addEventListener("click", () => {
+            const userInput = document.getElementById("user-input").value;
+            if (userInput.trim() !== "") {
+                adicionarMensagemUsuario(userInput);
+                obterRespostaDoBot(userInput);
+                document.getElementById("user-input").value = "";
+            }
+        });
+    </script>
 </body>
 
 </html>
-
-<script type="importmap">
-    {
-        "imports": {
-          "@google/generative-ai": "https://esm.run/@google/generative-ai"
-        }
-    }
-</script>
-
-<script type="module">
-    import { GoogleGenerativeAI } from "@google/generative-ai";
-
-    // Usando sua chave de API
-    const API_KEY = "AIzaSyAdD5TspfAx2glLLOzQ6f33sVwOX79GASM"; 
-
-    // Instanciar a API
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // Histórico de conversas (limitado)
-    let historicoConversa = [];
-
-    // Login simples (usuário: "admin", senha: "1234")
-    document.getElementById('login-btn').addEventListener('click', () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        if (username === "admin" && password === "1234") {
-            document.getElementById('login-error').textContent = "Login realizado com sucesso!";
-            document.getElementById('login-container').classList.add('hidden'); // Esconde o login
-            document.getElementById('chat-container').classList.remove('hidden'); // Exibe o chat
-        } else {
-            document.getElementById('login-error').textContent = "Usuário ou senha incorretos!";
-        }
-    });
-
-    async function obterRespostaDoBot(mensagemUsuario) {
-        try {
-            historicoConversa.push({ role: "user", content: mensagemUsuario });
-
-            const historicoLimitado = historicoConversa.slice(-3);
-            const contexto = historicoLimitado.map(item => `${item.role}: ${item.content}`).join('\n');
-
-            const prompt = `Aja e fale como o Zé Pequeno do filme Cidade de Deus. Aqui está a conversa até agora: \n${contexto}`;
-
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const text = await response.text();
-
-            historicoConversa.push({ role: "bot", content: text });
-
-            adicionarMensagemBot(text);
-        } catch (error) {
-            console.error("Erro ao obter resposta do bot:", error);
-            adicionarMensagemBot("Erro ao responder. Tente novamente.");
-        }
-    }
-
-    function adicionarMensagemUsuario(mensagem) {
-        const novaDiv = document.createElement("div");
-        novaDiv.className = "user-message";
-        novaDiv.textContent = mensagem;
-        document.getElementById("chat-log").appendChild(novaDiv);
-    }
-
-    function adicionarMensagemBot(mensagem) {
-        const novaDiv = document.createElement("div");
-        novaDiv.className = "bot-message";
-        novaDiv.textContent = mensagem;
-        document.getElementById("chat-log").appendChild(novaDiv);
-    }
-
-    document.getElementById("send-btn").addEventListener("click", () => {
-        const userInput = document.getElementById("user-input").value;
-        if (userInput.trim() !== "") {
-            adicionarMensagemUsuario(userInput);
-            obterRespostaDoBot(userInput);
-            document.getElementById("user-input").value = "";
-        }
-    });
-</script>
