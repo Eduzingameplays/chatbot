@@ -1,17 +1,19 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors'); // Adicionando o CORS
-const fetch = require('node-fetch'); // Para enviar requisições HTTP
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import fetch from 'node-fetch';  // Usando import para o fetch
 
 // Inicializar o Express
 const app = express();
 
 // Configurar CORS para permitir requisições da origem correta
-app.use(cors({
-    origin: 'http://127.0.0.1:5500', // Origem do frontend
-    methods: ['GET', 'POST'], // Métodos permitidos
-    allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
-}));
+app.use(cors());
+
+// {
+//     origin: 'http://127.0.0.1:5500', // Origem do frontend
+//     methods: ['GET', 'POST'], // Métodos permitidos
+//     allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
+// }
 
 // Middleware para processar JSON
 app.use(express.json());
