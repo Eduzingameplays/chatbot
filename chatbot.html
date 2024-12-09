@@ -60,9 +60,7 @@
         // Função para iniciar o chat
         async function iniciarChat() {
             try {
-                // Coloque aqui o código que inicializa a sessão do chat, se necessário
                 console.log("Sessão de chat iniciada!");
-                // Exemplo de inicialização simples (ajuste conforme necessário)
                 chatSession = {}; // Simulação de sessão
             } catch (error) {
                 console.error("Erro ao iniciar a sessão do chat:", error);
@@ -76,12 +74,8 @@
 
             if (username === "admin" && password === "1234") {
                 document.getElementById('login-error').textContent = ""; // Limpa mensagens de erro
-                
-                // Esconde o contêiner de login
-                document.getElementById('login-container').style.display = "none";
-                
-                // Exibe o contêiner do chat
-                document.getElementById('chat-container').style.display = "block";
+                document.getElementById('login-container').style.display = "none"; // Esconde o login
+                document.getElementById('chat-container').style.display = "block"; // Exibe o chat
 
                 iniciarChat(); // Inicializa o chat
             } else {
@@ -92,16 +86,20 @@
         // Função para enviar a mensagem e pegar a resposta do bot
         async function obterRespostaDoBot(mensagemUsuario) {
             try {
-                const response = await fetch('http://127.0.0.1:3000/generate-response', {
+                const response = await fetch('https://chatbot-i0u0.onrender.com/generate-response', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ userMessage: mensagemUsuario }),  // Envia a mensagem do usuário para o servidor
                 });
-                
+
+                if (!response.ok) {
+                    throw new Error('Erro ao comunicar com o servidor');
+                }
+
                 const data = await response.json();
-                const botResponse = data.response;  // Aqui você ajusta conforme a estrutura da resposta da sua API
+                const botResponse = data.response || "Resposta do bot não encontrada.";  // Ajuste conforme a resposta da API
 
                 // Adiciona a resposta do bot ao histórico e à interface
                 historicoConversa.push({ role: "bot", content: botResponse });
