@@ -7,10 +7,10 @@ import fetch from 'node-fetch';  // Usando import para o fetch
 const app = express();
 
 // Configurar CORS para permitir requisições da origem correta
-app.use(cors( {
-        origin: '*', // Origem do frontend
-        methods: ['GET', 'POST'], // Métodos permitidos
-         allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
+app.use(cors({
+    origin: 'https://chatbot-omega-inky.vercel.app',  // Permite requisições apenas deste domínio
+    methods: ['GET', 'POST'],  // Métodos permitidos
+    allowedHeaders: ['Content-Type'],  // Cabeçalhos permitidos
 }));
 
 
