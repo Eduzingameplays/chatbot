@@ -7,13 +7,13 @@ import fetch from 'node-fetch';  // Usando import para o fetch
 const app = express();
 
 // Configurar CORS para permitir requisições da origem correta
-app.use(cors());
+app.use(cors( {
+        origin: '*', // Origem do frontend
+        methods: ['GET', 'POST'], // Métodos permitidos
+         allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
+}));
 
-// {
-//     origin: 'http://127.0.0.1:5500', // Origem do frontend
-//     methods: ['GET', 'POST'], // Métodos permitidos
-//     allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
-// }
+
 
 // Middleware para processar JSON
 app.use(express.json());
